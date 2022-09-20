@@ -13,8 +13,26 @@ public class Bezier extends JFrame {
     private static Ellipse2D.Double[] shapes;
     private static int keyPointCounter;
 
-    static class Panel extends JPanel {
+    public static void main(String[] args) { new Bezier(); }
 
+    public Bezier() {
+        super("Bézier");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(null);
+
+        keyPointCounter = 0;
+        keyPoints = new Point2D[4];
+        shapes = new Ellipse2D.Double[4];
+        Panel panel = new Panel();
+        panel.setPreferredSize(new Dimension(800, 600));
+        panel.setBackground(bgColor);
+
+        setContentPane(panel);
+        setVisible(true);
+    }
+
+    static class Panel extends JPanel {
         private int currentKeyPoint = -1;
 
         public Panel() {
@@ -36,41 +54,37 @@ public class Bezier extends JFrame {
                 graphics.setColor(lineColor);
 
                 if (keyPointCounter > 1 && i < (keyPointCounter - 1)) {
-                    // Dibuja una linea entre los puntos clave
+                    // Dibuja una línea entre los puntos clave
                     graphics.drawLine((int) keyPoints[i].getX(), (int) keyPoints[i].getY(),
                             (int) keyPoints[i + 1].getX(),
-                            (int) keyPoints[i + 1].getY());
+                            (int) keyPoints[i + 1].getY()
+                    );
                 }
             }
 
-            //*---------> Aquí se dibuja la curva//
-
             final double t = 0.001;
 
-            // Curva cuadrática de Bezier
             if (keyPointCounter == 3) {
-                double x, y;
                 graphics.setColor(curveColor);
                 for (double k = t; k <= 1 + t; k += t) {
                     double r = 1 - k;
-                    x = Math.pow(r, 2) * keyPoints[0].getX() + 2 * k * r * keyPoints[1].getX()
+                    double x = Math.pow(r, 2) * keyPoints[0].getX() + 2 * k * r * keyPoints[1].getX()
                             + Math.pow(k, 2) * keyPoints[2].getX();
 
-                    y = Math.pow(r, 2) * keyPoints[0].getY() + 2 * k * r * keyPoints[1].getY()
+                    double y = Math.pow(r, 2) * keyPoints[0].getY() + 2 * k * r * keyPoints[1].getY()
                             + Math.pow(k, 2) * keyPoints[2].getY();
 
                     graphics.drawOval((int) x, (int) y, 1, 1);
                 }
             }
-            // Curva de Bezier cúbica
+
             if (keyPointCounter == 4) {
-                double x, y;
                 graphics.setColor(curveColor);
                 for (double k = t; k <= 1 + t; k += t) {
                     double r = 1 - k;
-                    x = Math.pow(r, 3) * keyPoints[0].getX() + 3 * k * Math.pow(r, 2) * keyPoints[1].getX()
+                    double x = Math.pow(r, 3) * keyPoints[0].getX() + 3 * k * Math.pow(r, 2) * keyPoints[1].getX()
                             + 3 * Math.pow(k, 2) * (1 - k) * keyPoints[2].getX() + Math.pow(k, 3) * keyPoints[3].getX();
-                    y = Math.pow(r, 3) * keyPoints[0].getY() + 3 * k * Math.pow(r, 2) * keyPoints[1].getY()
+                    double y = Math.pow(r, 3) * keyPoints[0].getY() + 3 * k * Math.pow(r, 2) * keyPoints[1].getY()
                             + 3 * Math.pow(k, 2) * (1 - k) * keyPoints[2].getY() + Math.pow(k, 3) * keyPoints[3].getY();
                     graphics.drawOval((int) x, (int) y, 1, 1);
                 }
@@ -94,10 +108,8 @@ public class Bezier extends JFrame {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                // Establece el punto que se toco para que mouseDragged() lo arrastre -1 si no
-                // agarro nada
                 for (int i = 0; i < keyPointCounter; i++) {
-                    if (shapes[i].contains((Point2D) e.getPoint())) {
+                    if (shapes[i].contains(e.getPoint())) {
                         currentKeyPoint = i;
                         break;
                     } else {
@@ -110,7 +122,6 @@ public class Bezier extends JFrame {
         class MouseDrag extends MouseMotionAdapter {
             @Override
             public void mouseDragged(MouseEvent e) {
-                // Arrastra el punto clave con el mouse
                 if (currentKeyPoint != -1) {
                     double x = e.getX();
                     double y = e.getY();
@@ -121,24 +132,4 @@ public class Bezier extends JFrame {
             }
         }
     }
-
-    public Bezier() {
-        // Set initial frame configuration
-        super("Bezier");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null);
-
-        keyPointCounter = 0;
-        keyPoints = new Point2D[4];
-        shapes = new Ellipse2D.Double[4];
-        Panel panel = new Panel();
-        panel.setPreferredSize(new Dimension(800, 600));
-        panel.setBackground(bgColor);
-
-        setContentPane(panel);
-        setVisible(true);
-    }
-
-    public static void main(String[] args) { new Bezier(); }
 }
